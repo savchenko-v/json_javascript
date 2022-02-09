@@ -3,7 +3,7 @@ const people2 = {
         "name": "A",
 		"group_1_a": {
             "name": "B",
-			"group_alpha": {  // group_1.group_1_a.group_alpha
+			"group_alpha": {  // group_1.group_1_a.group_alpha - 2
                 "name": "U",
                 "user_list": [
                     {
@@ -73,4 +73,34 @@ const people2 = {
             }
         ]
     }
-} 
+}
+
+function findGroup(people, nameList) {
+    var resultList = {};
+	for (const [key, value] of Object.entries(people)) {
+        if (value instanceof Object) {
+            nameList.push(key);
+            const userListKeys = Object.keys(value).filter(element => element.startsWith("user_list"));
+            if (userListKeys.length != 0) {
+                var usersAmount = 0;
+                for (const userListKey of userListKeys) {
+                    usersAmount += value[userListKey].length;
+                }
+                resultList[nameList.join('.')] = usersAmount;
+            } else {
+                var groupList = findGroup(value, nameList.slice());
+                resultList = Object.assign(resultList, groupList);
+            }
+            nameList.pop();
+        }
+	}
+    return resultList;
+}
+
+console.log(findGroup(people2, []));
+
+// задание: 
+// group_1: 4
+// group_1.group_1_a: 3
+// group_1.group_1_a.group_alpha: 2
+// group_1.group_1_a.group_betta: 1
